@@ -87,7 +87,6 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
-  console.log(req.user);
   try {
     return res
       .status(200)

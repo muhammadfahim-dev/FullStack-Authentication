@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { authFail, loginUser, start } from "../features/AuthSlice";
+import React, { useEffect, useState } from "react";
+import { authFail, loginUser, start, clearError } from "../features/AuthSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,16 +7,19 @@ import axios from "axios";
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const error = useSelector((state) => state.auth.error);
+  const { error, loading } = useSelector((state) => state.auth);
   const [form, setForm] = useState({ email: "", password: "" });
 
   const submitHandler = async (e) => {
     e.preventDefault();
     dispatch(start());
     try {
-      await axios.post("/api/v1/user/login", form);
-      const res = await axios.get("/api/v1/user/me");
-      dispatch(loginUser(res.data));
+      if (!form.email || !form.password) {
+        return dispatch(authFail("All fields are required"));
+      }
+
+      const res = await axios.post("/api/v1/user/login", form);
+      dispatch(loginUser(res.data.user));
       navigate("/");
     } catch (error) {
       dispatch(
@@ -24,6 +27,10 @@ function Login() {
       );
     }
   };
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
@@ -42,7 +49,10 @@ function Login() {
             placeholder="Email"
             className="border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => {
+              setForm({ ...form, email: e.target.value });
+              dispatch(clearError());
+            }}
             required
           />
           <input
@@ -50,20 +60,27 @@ function Login() {
             placeholder="Password"
             className="border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400"
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) => {
+              setForm({ ...form, password: e.target.value });
+              dispatch(clearError());
+            }}
             required
           />
           <button
             type="submit"
             className="py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200"
+            disabled={loading}
           >
-            Login
+            {loading ? "Loading..." : "Login"}
           </button>
         </form>
 
         <p className="text-center text-gray-600">
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 font-semibold underline">
+          <Link
+            to="/register"
+            className="text-blue-600 font-semibold underline"
+          >
             Register
           </Link>
         </p>

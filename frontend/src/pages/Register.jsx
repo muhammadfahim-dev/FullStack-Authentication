@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { registerUser, start, authFail } from "../features/AuthSlice";
+import React, { useState, useEffect } from "react";
+import {
+  registerUser,
+  start,
+  authFail,
+  clearError,
+} from "../features/AuthSlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
@@ -24,10 +29,16 @@ function Register() {
     }
   };
 
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-blue-600 text-center">Register</h1>
+        <h1 className="text-3xl font-bold text-blue-600 text-center">
+          Register
+        </h1>
 
         {error && (
           <p className="text-red-600 bg-red-100 py-2 px-4 rounded text-center">
@@ -41,7 +52,10 @@ function Register() {
             placeholder="Name"
             className="border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400"
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={(e) => {
+              setForm({ ...form, name: e.target.value });
+              dispatch(clearError());
+            }}
             required
           />
           <input
@@ -49,7 +63,10 @@ function Register() {
             placeholder="Email"
             className="border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => {
+              setForm({ ...form, email: e.target.value });
+              dispatch(clearError());
+            }}
             required
           />
           <input
@@ -57,7 +74,10 @@ function Register() {
             placeholder="Password"
             className="border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400"
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) => {
+              setForm({ ...form, password: e.target.value });
+              dispatch(clearError());
+            }}
             required
           />
           <button

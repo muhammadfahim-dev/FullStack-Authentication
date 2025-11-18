@@ -14,6 +14,7 @@ const AuthSlice = createSlice({
     start(state, action) {
       state.loading = true;
       state.error = null;
+      state.success = false;
     },
 
     registerUser(state, action) {
@@ -37,11 +38,15 @@ const AuthSlice = createSlice({
       state.user = null;
       state.error = null;
       state.loading = false;
-      state.success = true;
+      state.success = false;
+    },
+
+    clearError(state) {
+      state.error = null;
     },
   },
 });
 
-export const { start, registerUser, loginUser, logout, authFail } =
+export const { start, registerUser, loginUser, logout, authFail, clearError } =
   AuthSlice.actions;
 export default AuthSlice.reducer;
